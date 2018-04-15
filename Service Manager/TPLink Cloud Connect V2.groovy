@@ -31,7 +31,7 @@ primarily various users on GitHub.com.
 */
 
 definition(
-	name: "TP-Link Cloud Connect",
+	name: "TP-Link Cloud Connecttesting",
 	namespace: "davegut",
 	author: "Dave Gutheinz",
 	description: "A Service Manager for the TP-Link devices connecting through the TP-Link Cloud",
@@ -152,75 +152,6 @@ def selectDevices() {
 		}
 	}
 }
-
-def getDevices() {
-	def currentDevices = getDeviceData()
-	state.devices = [:]
-	def devices = state.devices
-	currentDevices.each {
-		def device = [:]
-		device["deviceMac"] = it.deviceMac
-		device["alias"] = it.alias
-		device["deviceModel"] = it.deviceModel
-		device["deviceId"] = it.deviceId
-		device["appServerUrl"] = it.appServerUrl
-		devices << ["${it.deviceMac}": device]
-		def isChild = getChildDevice(it.deviceMac)
-		if (isChild) {
-			isChild.syncAppServerUrl(it.appServerUrl)
-		}
-		log.info "Device ${it.alias} added to devices array"
-	}
-}
-
-def addDevices() {
-	def tpLinkModel = [:]
-	//	Plug-Switch Devices (no energy monitor capability)
-	tpLinkModel << ["HS100" : "(Cloud) TP-Link Plug-Switch"]			//	HS100
-	tpLinkModel << ["HS105" : "(Cloud) TP-Link Plug-Switch"]			//	HS105
-	tpLinkModel << ["HS200" : "(Cloud) TP-Link Plug-Switch"]			//	HS200
-	tpLinkModel << ["HS210" : "(Cloud) TP-Link Plug-Switch"]			//	HS210
-	tpLinkModel << ["KP100" : "(Cloud) TP-Link Plug-Switch"]			//	KP100
-	//	Energy Monitor Plugs
-	tpLinkModel << ["HS110" : "(Cloud) TP-Link EnergyMonitor Plug"]		//	HS110
-	tpLinkModel << ["HS115" : "(Cloud) TP-Link EnergyMonitor Plug"]		//	HS110
-	//	Soft White Bulbs
-	tpLinkModel << ["KB100" : "(Cloud) TP-Link SoftWhite Bulb"]			//	KB100
-	tpLinkModel << ["LB100" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB100
-	tpLinkModel << ["LB110" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB110
-	tpLinkModel << ["LB200" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB200
-	//	Tunable White Bulbs
-	tpLinkModel << ["LB120" : "(Cloud) TP-Link TunableWhite Bulb"]		//	LB120
-	//	Color Bulbs
-	tpLinkModel << ["KB130" : "(Cloud) TP-Link Color Bulb"]				//	KB130
-	tpLinkModel << ["LB130" : "(Cloud) TP-Link Color Bulb"]				//	LB130
-	tpLinkModel << ["LB230" : "(Cloud) TP-Link Color Bulb"]				//	LB230
-
-	def hub = location.hubs[0]
-	def hubId = hub.id
-	selectedDevices.each { dni ->
-		def isChild = getChildDevice(dni)
-		if (!isChild) {
-			def device = state.devices.find { it.value.deviceMac == dni }
-			def deviceModel = device.value.deviceModel.substring(0,5)
-			addChildDevice(
-				"davegut",
-				tpLinkModel["${deviceModel}"], 
-				device.value.deviceMac,
-				hubId, [
-					"label": device.value.alias,
-						"name": device.value.deviceModel, 
-					"data": [
-						"deviceId" : device.value.deviceId,
-						"appServerUrl": device.value.appServerUrl,
-					]
-				]
-			)
-			log.info "Installed TP-Link $deviceModel with alias ${device.value.alias}"
-		}
-	}
-}
-
 //	----- GET A NEW TOKEN FROM CLOUD -----
 def getToken() {
 	def hub = location.hubs[0]
@@ -291,6 +222,75 @@ def getDeviceData() {
 		}
 	}
 }
+def getDevices() {
+	def currentDevices = getDeviceData()
+	state.devices = [:]
+	def devices = state.devices
+	currentDevices.each {
+		def device = [:]
+		device["deviceMac"] = it.deviceMac
+		device["alias"] = it.alias
+		device["deviceModel"] = it.deviceModel
+		device["deviceId"] = it.deviceId
+		device["appServerUrl"] = it.appServerUrl
+		devices << ["${it.deviceMac}": device]
+		def isChild = getChildDevice(it.deviceMac)
+		if (isChild) {
+			isChild.syncAppServerUrl(it.appServerUrl)
+		}
+		log.info "Device ${it.alias} added to devices array"
+	}
+}
+
+def addDevices() {
+	def tpLinkModel = [:]
+	//	Plug-Switch Devices (no energy monitor capability)
+	tpLinkModel << ["HS100" : "(Cloud) TP-Link Plug-Switch"]			//	HS100
+	tpLinkModel << ["HS105" : "(Cloud) TP-Link Plug-Switch"]			//	HS105
+	tpLinkModel << ["HS200" : "(Cloud) TP-Link Plug-Switch"]			//	HS200
+	tpLinkModel << ["HS210" : "(Cloud) TP-Link Plug-Switch"]			//	HS210
+	tpLinkModel << ["KP100" : "(Cloud) TP-Link Plug-Switch"]			//	KP100
+	//	Energy Monitor Plugs
+	tpLinkModel << ["HS110" : "(Cloud) TP-Link EnergyMonitor Plug"]		//	HS110
+	tpLinkModel << ["HS115" : "(Cloud) TP-Link EnergyMonitor Plug"]		//	HS110
+	//	Soft White Bulbs
+	tpLinkModel << ["KB100" : "(Cloud) TP-Link SoftWhite Bulb"]			//	KB100
+	tpLinkModel << ["LB100" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB100
+	tpLinkModel << ["LB110" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB110
+	tpLinkModel << ["LB200" : "(Cloud) TP-Link SoftWhite Bulb"]			//	LB200
+	//	Tunable White Bulbs
+	tpLinkModel << ["LB120" : "(Cloud) TP-Link TunableWhite Bulb"]		//	LB120
+	//	Color Bulbs
+	tpLinkModel << ["KB130" : "(Cloud) TP-Link Color Bulb"]				//	KB130
+	tpLinkModel << ["LB130" : "(Cloud) TP-Link Color Bulb"]				//	LB130
+	tpLinkModel << ["LB230" : "(Cloud) TP-Link Color Bulb"]				//	LB230
+
+	def hub = location.hubs[0]
+	def hubId = hub.id
+	selectedDevices.each { dni ->
+		def isChild = getChildDevice(dni)
+		if (!isChild) {
+			def device = state.devices.find { it.value.deviceMac == dni }
+			def deviceModel = device.value.deviceModel.substring(0,5)
+			addChildDevice(
+				"davegut",
+				tpLinkModel["${deviceModel}"], 
+				device.value.deviceMac,
+				hubId, [
+					"label": device.value.alias,
+						"name": device.value.deviceModel, 
+					"data": [
+						"deviceId" : device.value.deviceId,
+						"appServerUrl": device.value.appServerUrl,
+					]
+				]
+			)
+			log.info "Installed TP-Link $deviceModel with alias ${device.value.alias}"
+		}
+	}
+}
+
+
 
 //	----- SEND DEVICE COMMAND TO CLOUD FOR DH -----
 def sendDeviceCmd(appServerUrl, deviceId, command) {
